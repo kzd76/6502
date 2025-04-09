@@ -256,7 +256,7 @@ PROCESS_INPUT_ITEM:
   .elseif .def(AIM65)
         jsr     MONRDKEY2
   .else
-        jsr     MONRDKEY
+        jsr     CHRIN
   .endif
   .ifdef CONFIG_IO_MSB
         and     #$7F

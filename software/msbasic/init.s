@@ -1,5 +1,6 @@
 .segment "INIT"
 
+
 ; ----------------------------------------------------------------------------
 PR_WRITTEN_BY:
         lda     #<QT_WRITTEN_BY
@@ -7,20 +8,20 @@ PR_WRITTEN_BY:
         jsr     STROUT
 
 COLD_START:
-
         jsr		LCD_CLS
 
-        ldx     #$FF
+  .ifndef CBM2
+        ldx     #$FF							; Do we need this?
         stx     CURLIN+1
-        ldx     #$FB
+  .endif
 
+        ldx     #$FB
         txs
 
         lda     #<COLD_START
         ldy     #>COLD_START
         sta     GORESTART+1
         sty     GORESTART+2
-
         sta     GOSTROUT+1
         sty     GOSTROUT+2
         lda     #<AYINT
@@ -31,26 +32,23 @@ COLD_START:
         ldy     #>GIVAYF
         sta     GOGIVEAYF
         sty     GOGIVEAYF+1
-
+        
         lda     #$4C
         sta     GORESTART
-
         sta     GOSTROUT
         sta     JMPADRS
-
         sta     USR
 
         lda     #<IQERR
         ldy     #>IQERR
-        
+
         sta     USR+1
         sty     USR+2
-		
+
         lda     #WIDTH
         sta     Z17
         lda     #WIDTH2
         sta     Z18
-
 
         ldx     #GENERIC_CHRGET_END-GENERIC_CHRGET-1 ; XXX
 
@@ -60,17 +58,15 @@ L4098:
         dex
         bne     L4098
 
-        lda     #$03
+        lda     #$03							; This is duplicated, but why?
         sta     DSCLEN
 
         txa
         sta     SHIFTSIGNEXT
-  
         sta     LASTPT+1
-  
+
         pha
         sta     Z14
-
         lda     #$03
         sta     DSCLEN
         jsr     CRDO
@@ -85,21 +81,24 @@ L4098:
         lda     #<QT_MEMORY_SIZE
         ldy     #>QT_MEMORY_SIZE
         jsr     STROUT
-
+        
         jsr     NXIN
-
+        
         stx     TXTPTR
         sty     TXTPTR+1
         jsr     CHRGET
 
+      .ifndef BARNA
+        cmp     #$41
+        beq     PR_WRITTEN_BY
+      .endif
+
         tay
         bne     L40EE
 
-.ifndef CBM2
   .ifndef BARNA
-        lda     #<RAMSTART2
+        lda     #<RAMSTART2						; why don't we need this?
   .endif
-.endif
 
         ldy     #>RAMSTART2
 
@@ -117,6 +116,7 @@ L40D7:
         inc     LINNUM+1
 
 		bmi     L40FA
+
 
 L40DD:
         lda     #$55 ; 01010101 / 10101010
@@ -148,12 +148,11 @@ L40FA:
         sty     FRETOP+1
 
 L4106:
-
         lda     #<QT_TERMINAL_WIDTH
         ldy     #>QT_TERMINAL_WIDTH
         jsr     STROUT
         jsr     NXIN
-
+        
         stx     TXTPTR
         sty     TXTPTR+1
         jsr     CHRGET
@@ -169,17 +168,15 @@ L2829:
         sta     Z17
 L4129:
         sbc     #$0E
-
         bcs     L4129
         eor     #$FF
-
         sbc     #$0C
-
         clc
         adc     Z17
         sta     Z18
 
 L4136:
+
         ldx     #<RAMSTART2
         ldy     #>RAMSTART2
 
@@ -192,8 +189,8 @@ L4136:
 
         bne     L4192
         inc     TXTTAB+1
-L4192:
 
+L4192:
         lda     TXTTAB
         ldy     TXTTAB+1
         jsr     REASON
@@ -219,22 +216,21 @@ L4192:
         jmp     RESTART
 
 QT_WRITTEN_BY:
-        .byte   CR
+        .byte   CR,CR,$0C ; FORM FEED
         .byte   "WRITTEN BY WEILAND & GATES"
-        .byte   CR,0
-
+        .byte   CR,CR,0
 QT_MEMORY_SIZE:
         .byte   "MEMORY SIZE"
         .byte   0
-        
 QT_TERMINAL_WIDTH:
         .byte   "TERMINAL WIDTH"
         .byte   0
-        
 QT_BYTES_FREE:
         .byte   " BYTES FREE"
         .byte   CR,0
-
 QT_BASIC:
         .byte   "### MSBASIC ###"
         .byte   CR,CR,0
+        .byte   "COPYRIGHT 1977 BY MICROSOFT CO."
+        .byte   CR,CR
+        .byte   0

@@ -27,9 +27,9 @@ RAMSTART2		:= $0400
 
 ; monitor functions
 CHROUT			:= ECHO
-GETIN			:= CHRIN
+;GETIN			:= CHRIN
 MONCOUT			:= ECHO
-MONRDKEY		:= CHRIN
+;MONRDKEY		:= CHRIN
 
 ;OPEN	:= $FFC0
 ;CLOSE	:= $FFC3

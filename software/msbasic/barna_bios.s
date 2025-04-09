@@ -572,6 +572,10 @@ LCD_PRINT_ASCII:
 				LDA		CCHAR
 				CMP		#CRCHR					; if it is CR, just print it
 				BEQ		PRINTCR
+				CMP		#$20					; if anything goes in below space
+				BCC		FINISHPRINT
+				CMP		#$7F					; or above del, do nothing
+				BCS		FINISHPRINT
 				STA		CHVAL
 				LDA		#<CHROM					; low byte of the character rom address
 				STA		CHADDRL
