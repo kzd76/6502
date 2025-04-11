@@ -240,18 +240,12 @@ FRM_STACK2:
         tay
         pla
         sta     INDEX
-.ifndef CONFIG_2B
-        inc     INDEX ; bug: assumes not on page boundary
-; bug exists on AppleSoft II
-.endif
         pla
         sta     INDEX+1
-.ifdef CONFIG_2B
         inc     INDEX
         bne     LEB69
         inc     INDEX+1
 LEB69:
-.endif
         tya
         pha
 
@@ -261,10 +255,8 @@ LEB69:
 ; ----------------------------------------------------------------------------
 FRM_STACK3:
         jsr     ROUND_FAC
-.ifndef CONFIG_SMALL
         lda     FAC+4
         pha
-.endif
         lda     FAC+3
         pha
         lda     FAC+2
@@ -307,10 +299,8 @@ FRM_PERFORM2:
         pla
         sta     ARG+3
         pla
-.ifndef CONFIG_SMALL
         sta     ARG+4
         pla
-.endif
         sta     ARGSIGN
         eor     FACSIGN
         sta     SGNCPR
@@ -394,16 +384,6 @@ EQUOP:
         eor     #$FF
         jmp     GIVAYF
 L2D74:
-.ifdef SYM1
-        cmp     #TOKEN_USR
-        bne     LCC8A
-        jmp     LCDBD
-LCC8A:
-        cmp     #$26
-        bne     LCC91
-        jmp     LCDFE
-LCC91:
-.endif
         cmp     #TOKEN_FN
         bne     L2D7B
         jmp     L31F3
@@ -452,51 +432,17 @@ FRM_VARIABLE:
 FRM_VARIABLE_CALL	= *-1
         sta     FAC_LAST-1
         sty     FAC_LAST
-.ifdef CONFIG_CBM_ALL
-        lda     VARNAM
-        ldy     VARNAM+1
-.endif
         ldx     VALTYP
         beq     L2DB1
-.ifdef CONFIG_CBM_ALL
-  .ifdef CONFIG_CBM1_PATCHES
-        jmp     PATCH2
-        clc
-LCE3B:
-  .else
-        ldx     #$00
-        stx     STRNG1+1
-        bit     FAC+4
-        bpl     LCE53
-        cmp     #$54	; T
-        bne     LCE53
-  .endif
-        cpy     #$C9	; I$
-        bne     LCE53
-        jsr     LCE76
-        sty     EXPON
-        dey
-        sty     STRNG2
-        ldy     #$06
-        sty     INDX
-        ldy     #$24
-        jsr     LDD3A
-        jmp     LD353
-LCE53:
-.endif
-.ifdef CONFIG_2
-  .ifndef CBM2
+
     .ifndef BARNA
 ; bugfix?
 ; fixed on AppleSoft II, not on any CBM
         ldx     #$00
         stx     STRNG1+1
     .endif
-  .endif
-.endif
         rts
 L2DB1:
-.ifndef CONFIG_SMALL
         ldx     VALTYP+1
         bpl     L2DC2
         ldy     #$00
@@ -508,11 +454,6 @@ L2DB1:
         txa
         jmp     GIVAYF
 L2DC2:
-.endif
-.ifdef CONFIG_CBM1_PATCHES
-        jmp     PATCH3
-        .byte   $19
-.endif
 .ifdef CBM2
         bit     FAC+4
         bpl     LCE90

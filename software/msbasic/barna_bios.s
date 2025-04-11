@@ -32,13 +32,14 @@ KBDRPTR		= $11 			; 1 byte
 KBDFLAG		= $12			; 1 byte
 
 
-KBDBUFF 	= $0300			; FF bytes
-IN			= $0400         ; Input buffer
+KBDBUFF 	= $0300			; Keyboard input buffer
+IN			= $0400         ; Input buffer for WozMon
 
 
 CHROM		= $D000			; First address of the LCD character ROM
 SCROM		= $D500			; First address of the scancode to ascii ROM
 SSCROM		= $D600			; First address of the shifted scancode to ascii ROM
+RALTROM		= $D700			; First address of the right alted scancode to ascii ROM
 
 KBDPB 		= $9010
 KBDPBDDR 	= $9012
@@ -63,6 +64,9 @@ ACIACTRL	= $A003
 
 RELEASE		= %00000001
 SHIFT		= %00000010
+EXTENDED	= %00000100
+R_ALT		= %00001000
+L_ALT		= %00010000
 
 ; LCD flags
 
@@ -92,8 +96,6 @@ NINECHR		= $39			; 9 character
 ;  line of the system. This ensures that the data direction registers
 ;  are selected.
 ;-------------------------------------------------------------------------
-
-
 
 RESET:
 				SEI								; Disable interrupts during reset
@@ -544,6 +546,58 @@ LCD_Y_POS_ALL:
 				RTS
 
 ; ----------------------------------------------------------------------------
+; Set or clear a pixel on the LCD
+; If A contains $00 the pixel is cleared, otherwise it is set
+; Y and X contains the coordinates of the pixel to be set
+; ----------------------------------------------------------------------------
+LCD_PLOT:
+				PHA
+				STY		YPOS
+				TXA
+				LDX		#$00
+PLOTXLOOP:
+				CMP		#$08
+				BCC		NOMOREXLOOP
+				CLC
+				INX
+				SBC		#$08
+				JMP		PLOTXLOOP
+
+NOMOREXLOOP:
+				STX		XPOS
+				TAX		
+				CLC
+				LDA		#$01
+PLOTLOOP:
+				CPX		#$00
+				BEQ		PLOTREADY
+				ROL		A
+				DEX
+				JMP		PLOTLOOP
+
+PLOTREADY:
+				STA		CHR
+				JSR		LCD_Y_POS
+				JSR		LCD_X_POS
+				JSR		LCD_READMEM
+				JSR		LCD_Y_POS
+				TAY
+				PLA
+				BEQ		PLOTCLEAR
+				TYA
+				ORA		CHR
+				JSR		LCD_DATA
+				JMP		PLOTDONE
+
+PLOTCLEAR:
+				TYA
+				EOR		CHR
+				JSR		LCD_DATA
+
+PLOTDONE:
+				RTS
+
+; ----------------------------------------------------------------------------
 ; ----------------------------------------------------------------------------
 LCD_PRINT_CHAR:
 				PHA
@@ -670,11 +724,6 @@ SAVE:
 
 ; ----------------------------------------------------------------------------
 ; ----------------------------------------------------------------------------
-ISCNTC:
-				RTS
-
-; ----------------------------------------------------------------------------
-; ----------------------------------------------------------------------------
 RX_WAIT:
 				LDA		ACIASTAT
 				AND		#$08					; Check RX buffer
@@ -715,31 +764,86 @@ IRQ:
 				
 				LDA		KBDFLAG					; Check keyboard flag for release flag
 				AND		#RELEASE
-				BEQ		IRQ_READ_KEY			; 
-				
+				BNE		RELEASE_MODE			; Jump out if we are in release mode
+				LDA		KBDFLAG
+				AND		#EXTENDED
+				BNE		IRQ_READ_EXTKEY			; Jump out to extended key read
+				JMP		IRQ_READ_KEY			; Otherwise jump to process the key
+
+RELEASE_MODE:
 				LDA		KBDFLAG					; Load keyboard flags
 				EOR		#RELEASE				; Flip the release flag
 				STA		KBDFLAG					; Store the flags back
-				LDA		KBDPB					; Load the scan code
+				LDA		KBDPB					; Load the scan code to cancel the interrupt
 				
-				JSR		DEBUG
-				
+				CMP		#$11
+				BEQ		L_ALT_UP
 				CMP		#$12					; If it is a left shift key, 
 				BEQ		SHIFT_UP				; 	it is released
 				CMP		#$59					; If it is a right shift key, 
 				BEQ		SHIFT_UP				; 	it is released
 				JMP		IRQ_EXIT
-	
+
+RELEASE_EXTENDED:
+				LDA		KBDFLAG
+				EOR		#EXTENDED
+				EOR		#RELEASE
+				STA		KBDFLAG
+				LDA		KBDPB					; Load the scan code to cancel the interrupt
+
+				CMP		#$11
+				BEQ		R_ALT_UP
+				JMP		IRQ_EXIT
+
+R_ALT_UP:
+				LDA		KBDFLAG
+				EOR		#R_ALT
+				STA		KBDFLAG
+				JMP		IRQ_EXIT
+
+L_ALT_UP:
+				LDA		KBDFLAG
+				EOR		#L_ALT
+				STA		KBDFLAG
+				JMP		IRQ_EXIT
+
 SHIFT_UP:
 				LDA		KBDFLAG					; Removing shift key from 
 				EOR		#SHIFT					; keyboard flags as it was released
 				STA		KBDFLAG
 				JMP		IRQ_EXIT
-	
+
+IRQ_READ_EXTKEY:
+				LDA		KBDPB
+				CMP		#$F0
+				BEQ		RELEASE_MODE
+				CMP		#$E0
+				BEQ		RELEASE_EXTENDED
+				CMP		#$11
+				BEQ		R_ALT_DOWN
+
+				TAX
+
+				LDA		KBDFLAG
+				AND		#R_ALT
+				BNE		R_ALTED_KEY				; Go to right alted keys if right alt flag active
+
+				JMP		IRQ_EXIT
+
+R_ALT_DOWN:
+				LDA		KBDFLAG
+				ORA		#R_ALT
+				STA		KBDFLAG
+				JMP		IRQ_EXIT
+
 IRQ_READ_KEY:
 				LDA		KBDPB					; Reading the pressed key
 				CMP		#$F0
 				BEQ		KEY_RELEASE				; It is a release key event
+				CMP		#$E0
+				BEQ		KEY_EXTENDED			; It is an extended key
+				CMP		#$11
+				BEQ		L_ALT_DOWN
 				CMP		#$12
 				BEQ		SHIFT_DOWN				; Left shift was pressed
 				CMP		#$59
@@ -749,10 +853,22 @@ IRQ_READ_KEY:
 				LDA		KBDFLAG					; Check the flags
 				AND		#SHIFT
 				BNE		SHIFTED_KEY				; Go to shifted keys if shift flag active
-					
+
+				LDA		KBDFLAG
+				AND		#L_ALT
+				BNE		L_ALTED_KEY				; Go to right alted keys if right alt flag active
+
 				LDA		SCROM, X				; Otherwise look up for a normal key
 				JMP		PUSH_KEY
-				
+
+L_ALTED_KEY:
+				LDA		RALTROM, X
+				JMP		PUSH_KEY
+
+R_ALTED_KEY:
+				LDA		RALTROM, X
+				JMP		PUSH_KEY
+
 SHIFTED_KEY:
 				LDA		SSCROM, X				; Look up for the shifted key
 
@@ -761,13 +877,25 @@ PUSH_KEY:
 				STA		KBDBUFF, X				; and store the ascii value there
 				INC		KBDWPTR					; Move write head to the next slot
 				JMP		IRQ_EXIT
-				
+
+L_ALT_DOWN:
+				LDA		KBDFLAG					; Load the keyboard flags
+				ORA		#L_ALT					; Set shifted mode
+				STA		KBDFLAG
+				JMP		IRQ_EXIT
+
 SHIFT_DOWN:
 				LDA		KBDFLAG					; Load the keyboard flags
 				ORA		#SHIFT					; Set shifted mode
 				STA		KBDFLAG
 				JMP		IRQ_EXIT
-	
+
+KEY_EXTENDED:
+				LDA		KBDFLAG
+				ORA		#EXTENDED				; Set the next key is an extended key
+				STA		KBDFLAG
+				JMP		IRQ_EXIT
+
 KEY_RELEASE:				
 				LDA		KBDFLAG					; Load the keyboard flags
 				ORA		#RELEASE				; Set release mode
@@ -783,6 +911,9 @@ IRQ_EXIT:
 .segment "WOZMON"
 
 ; ----------------------------------------------------------------------------
+; The original WozMon is cleared the interrupt flag
+; Because of space limitations this is removed, so before wozmon is called
+; interrupts must be enabled.
 ; ----------------------------------------------------------------------------
 WOZMON:
 										

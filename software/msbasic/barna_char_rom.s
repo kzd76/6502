@@ -270,7 +270,7 @@
 	.byte $3F ; $00
 	.byte $3F ; $01 F9
 	.byte $3F ; $02
-	.byte $3F ; $03 F5
+	.byte $03 ; $03 F5
 	.byte $3F ; $04 F3
 	.byte $3F ; $05 F1
 	.byte $3F ; $06 F2
@@ -537,7 +537,7 @@
 	.byte $3F ; $00
 	.byte $3F ; $01 F9
 	.byte $3F ; $02
-	.byte $3F ; $03 F5
+	.byte $03 ; $03 F5
 	.byte $3F ; $04 F3
 	.byte $3F ; $05 F1
 	.byte $3F ; $06 F2
@@ -613,6 +613,273 @@
 	.byte $5F ; $4a HU: _
 	.byte $4C ; $4b L
 	.byte $3B ; $4c ;
+	.byte $50 ; $4d P
+	.byte $5F ; $4e HU: _
+	.byte $3F ; $4f
+	.byte $3F ; $50
+	.byte $3F ; $51
+	.byte $27 ; $52 '
+	.byte $3F ; $53 
+	.byte $5B ; $54 [
+	.byte $3D ; $55 =
+	.byte $3F ; $56
+	.byte $3F ; $57
+	.byte $3F ; $58			caps lock
+	.byte $3F ; $59			right shift
+	.byte $0D ; $5a	enter
+	.byte $5D ; $5b ]
+	.byte $3F ; $5c
+	.byte $5C ; $5d \
+	.byte $3F ; $5e
+	.byte $3F ; $5f
+	
+	.byte $3F ; $60
+	.byte $3F ; $61
+	.byte $3F ; $62
+	.byte $3F ; $63
+	.byte $3F ; $64
+	.byte $3F ; $65
+	.byte $5F ; $66 backspace ($08 ascii, $5F for wozmon)
+	.byte $3F ; $67
+	.byte $3F ; $68
+	.byte $31 ; $69 1
+	.byte $3F ; $6a 
+	.byte $34 ; $6b 4		left arrow E0
+	.byte $37 ; $6c 7
+	.byte $3F ; $6d 
+	.byte $3F ; $6e
+	.byte $3F ; $6f
+	.byte $30 ; $70 0		ins E0
+	.byte $2E ; $71 .		del E0
+	.byte $32 ; $72 2		down arrow E0
+	.byte $35 ; $73 5
+	.byte $36 ; $74 6		right arrow E0
+	.byte $38 ; $75 8		up arrow E0
+	.byte $1B ; $76	esc
+	.byte $3F ; $77
+	.byte $3F ; $78 F11
+	.byte $2B ; $79 +
+	.byte $33 ; $7a 3
+	.byte $2D ; $7b -
+	.byte $2A ; $7c *
+	.byte $39 ; $7d 9
+	.byte $3F ; $7e
+	.byte $3F ; $7f
+	
+	.byte $3F ; $80
+	.byte $3F ; $81
+	.byte $3F ; $82
+	.byte $3F ; $83 F7
+	.byte $3F ; $84
+	.byte $3F ; $85
+	.byte $3F ; $86
+	.byte $3F ; $87
+	.byte $3F ; $88
+	.byte $3F ; $89
+	.byte $3F ; $8a
+	.byte $3F ; $8b
+	.byte $3F ; $8c
+	.byte $3F ; $8d
+	.byte $3F ; $8e
+	.byte $3F ; $8f
+	.byte $3F ; $90
+	.byte $3F ; $91
+	.byte $3F ; $92
+	.byte $3F ; $93
+	.byte $3F ; $94
+	.byte $3F ; $95
+	.byte $3F ; $96
+	.byte $3F ; $97
+	.byte $3F ; $98
+	.byte $3F ; $99
+	.byte $3F ; $9a
+	.byte $3F ; $9b
+	.byte $3F ; $9c
+	.byte $3F ; $9d
+	.byte $3F ; $9e
+	.byte $3F ; $9f
+	
+	.byte $3F ; $a0
+	.byte $3F ; $a1
+	.byte $3F ; $a2
+	.byte $3F ; $a3
+	.byte $3F ; $a4
+	.byte $3F ; $a5
+	.byte $3F ; $a6
+	.byte $3F ; $a7
+	.byte $3F ; $a8
+	.byte $3F ; $a9
+	.byte $3F ; $aa
+	.byte $3F ; $ab
+	.byte $3F ; $ac
+	.byte $3F ; $ad
+	.byte $3F ; $ae
+	.byte $3F ; $af
+	.byte $3F ; $b0
+	.byte $3F ; $b1
+	.byte $3F ; $b2
+	.byte $3F ; $b3
+	.byte $3F ; $b4
+	.byte $3F ; $b5
+	.byte $3F ; $b6
+	.byte $3F ; $b7
+	.byte $3F ; $b8
+	.byte $3F ; $b9
+	.byte $3F ; $ba
+	.byte $3F ; $bb
+	.byte $3F ; $bc
+	.byte $3F ; $bd
+	.byte $3F ; $be
+	.byte $3F ; $bf
+	
+	.byte $3F ; $c0
+	.byte $3F ; $c1
+	.byte $3F ; $c2
+	.byte $3F ; $c3
+	.byte $3F ; $c4
+	.byte $3F ; $c5
+	.byte $3F ; $c6
+	.byte $3F ; $c7
+	.byte $3F ; $c8
+	.byte $3F ; $c9
+	.byte $3F ; $ca
+	.byte $3F ; $cb
+	.byte $3F ; $cc
+	.byte $3F ; $cd
+	.byte $3F ; $ce
+	.byte $3F ; $cf
+	.byte $3F ; $d0
+	.byte $3F ; $d1
+	.byte $3F ; $d2
+	.byte $3F ; $d3
+	.byte $3F ; $d4
+	.byte $3F ; $d5
+	.byte $3F ; $d6
+	.byte $3F ; $d7
+	.byte $3F ; $d8
+	.byte $3F ; $d9
+	.byte $3F ; $da
+	.byte $3F ; $db
+	.byte $3F ; $dc
+	.byte $3F ; $dd
+	.byte $3F ; $de
+	.byte $3F ; $df
+	
+	.byte $3F ; $e0
+	.byte $3F ; $e1
+	.byte $3F ; $e2
+	.byte $3F ; $e3
+	.byte $3F ; $e4
+	.byte $3F ; $e5
+	.byte $3F ; $e6
+	.byte $3F ; $e7
+	.byte $3F ; $e8
+	.byte $3F ; $e9
+	.byte $3F ; $ea
+	.byte $3F ; $eb
+	.byte $3F ; $ec
+	.byte $3F ; $ed
+	.byte $3F ; $ee
+	.byte $3F ; $ef
+	.byte $3F ; $f0
+	.byte $3F ; $f1
+	.byte $3F ; $f2
+	.byte $3F ; $f3
+	.byte $3F ; $f4
+	.byte $3F ; $f5
+	.byte $3F ; $f6
+	.byte $3F ; $f7
+	.byte $3F ; $f8
+	.byte $3F ; $f9
+	.byte $3F ; $fa
+	.byte $3F ; $fb
+	.byte $3F ; $fc
+	.byte $3F ; $fd
+	.byte $3F ; $fe
+	.byte $3F ; $ff
+
+; $D700 decoding scan codes to ascii values for right alted keys
+; For unknown characters ? is sent back
+	
+	.byte $3F ; $00
+	.byte $3F ; $01 F9
+	.byte $3F ; $02
+	.byte $03 ; $03 F5
+	.byte $3F ; $04 F3
+	.byte $3F ; $05 F1
+	.byte $3F ; $06 F2
+	.byte $3F ; $07 F12
+	.byte $3F ; $08
+	.byte $3F ; $09 F10
+	.byte $3F ; $0a F8
+	.byte $3F ; $0b F6
+	.byte $3F ; $0c F4
+	.byte $09 ; $0d	tab
+	.byte $60 ; $0e '
+	.byte $3F ; $0f
+	.byte $3F ; $10
+	.byte $3F ; $11			left alt + right alt E0
+	.byte $3F ; $12			left shift
+	.byte $3F ; $13
+	.byte $3F ; $14			left ctrl + right ctrl E0
+	.byte $51 ; $15 Q
+	.byte $27 ; $16 HU: '
+	.byte $3F ; $17
+	.byte $3F ; $18
+	.byte $3F ; $19
+	.byte $59 ; $1a HU: Y
+	.byte $53 ; $1b S
+	.byte $41 ; $1c	A
+	.byte $57 ; $1d W
+	.byte $22 ; $1e HU: "
+	.byte $3F ; $1f
+	
+	.byte $3F ; $20
+	.byte $43 ; $21 C
+	.byte $58 ; $22 X
+	.byte $44 ; $23 D
+	.byte $45 ; $24 E
+	.byte $21 ; $25 HU: !
+	.byte $2B ; $26 HU: +
+	.byte $3F ; $27
+	.byte $3F ; $28
+	.byte $20 ; $29 space
+	.byte $56 ; $2a V
+	.byte $46 ; $2b F
+	.byte $54 ; $2c T
+	.byte $52 ; $2d R
+	.byte $25 ; $2e HU: %
+	.byte $3F ; $2f
+	.byte $3F ; $30
+	.byte $4E ; $31 N
+	.byte $42 ; $32 B
+	.byte $48 ; $33 H
+	.byte $47 ; $34 G
+	.byte $5A ; $35 HU: Z
+	.byte $2F ; $36 HU: /
+	.byte $3F ; $37
+	.byte $3F ; $38
+	.byte $3F ; $39
+	.byte $4D ; $3a M
+	.byte $4A ; $3b J
+	.byte $55 ; $3c U
+	.byte $3D ; $3d HU: =
+	.byte $28 ; $3e HU: (
+	.byte $3F ; $3f
+	
+	.byte $3F ; $40
+	.byte $3F ; $41 HU: ?
+	.byte $4B ; $42 K
+	.byte $49 ; $43 I
+	.byte $4F ; $44 O
+	.byte $30 ; $45 0
+	.byte $29 ; $46 HU: )
+	.byte $3F ; $47
+	.byte $3F ; $48
+	.byte $3A ; $49 HU: :
+	.byte $5F ; $4a HU: _
+	.byte $4C ; $4b L
+	.byte $24 ; $4c HU: $
 	.byte $50 ; $4d P
 	.byte $5F ; $4e HU: _
 	.byte $3F ; $4f
